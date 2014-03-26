@@ -32,7 +32,10 @@ class FilterConfiguration
             throw new \RuntimeException(sprintf('Could not find configuration for a filter: %s', $filter));
         }
 
-        return $this->filters[$filter];
+        $filterConfiguration = $this->filters[$filter];
+        $filterConfiguration['name'] = $filter;
+
+        return $filterConfiguration;
     }
 
     /**

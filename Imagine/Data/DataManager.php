@@ -62,9 +62,9 @@ class DataManager
      *
      * @return void
      */
-    public function addLoader($filter, LoaderInterface $loader)
+    public function addLoader($filterName, LoaderInterface $loader)
     {
-        $this->loaders[$filter] = $loader;
+        $this->loaders[$filterName] = $loader;
     }
 
     /**
@@ -76,9 +76,9 @@ class DataManager
      *
      * @throws \InvalidArgumentException
      */
-    public function getLoader($filter)
+    public function getLoader($filterName)
     {
-        $config = $this->filterConfig->get($filter);
+        $config = $this->filterConfig->get($filterName);
 
         $loaderName = empty($config['data_loader'])
             ? $this->defaultLoader : $config['data_loader'];
@@ -102,9 +102,9 @@ class DataManager
      *
      * @return \Liip\ImagineBundle\Binary\BinaryInterface
      */
-    public function find($filter, $path)
+    public function find($filterName, $path)
     {
-        $loader = $this->getLoader($filter);
+        $loader = $this->getLoader($filterName);
 
         $binary = $loader->find($path);
         if (!$binary instanceof BinaryInterface) {

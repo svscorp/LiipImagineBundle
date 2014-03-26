@@ -61,18 +61,18 @@ class WebPathResolver implements ResolverInterface
     /**
      * {@inheritDoc}
      */
-    public function isStored($path, $filter)
+    public function isStored($path, $filterConfiguration)
     {
-        return $this->filesystem->exists($this->getFilePath($path, $filter));
+        return $this->filesystem->exists($this->getFilePath($path, $filterConfiguration));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function store(BinaryInterface $binary, $path, $filter)
+    public function store(BinaryInterface $binary, $path, $filterConfiguration)
     {
         $this->filesystem->dumpFile(
-            $this->getFilePath($path, $filter),
+            $this->getFilePath($path, $filterConfiguration),
             $binary->getContent()
         );
     }
@@ -107,17 +107,19 @@ class WebPathResolver implements ResolverInterface
     /**
      * {@inheritDoc}
      */
-    protected function getFilePath($path, $filter)
+    protected function getFilePath($path, $filterConfiguration)
     {
-        return $this->webRoot.'/'.$this->getFileUrl($path, $filter);
+        return $this->webRoot.'/'.$this->getFileUrl($path, $filterConfiguration);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function getFileUrl($path, $filter)
+    protected function getFileUrl($path, $filterConfiguration)
     {
-        return $this->cachePrefix.'/'.$filter.'/'.$path;
+        $filterPath = isset($filterConfiguration['path'])?$filterConfiguration['path']:$filterConfiguration['name'];
+
+        return $this->cachePrefix.'/'.$filterPath.'/'.$path;
     }
 
     /**

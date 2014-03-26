@@ -60,9 +60,9 @@ class CacheManager
      *
      * @return void
      */
-    public function addResolver($filter, ResolverInterface $resolver)
+    public function addResolver($filterName, ResolverInterface $resolver)
     {
-        $this->resolvers[$filter] = $resolver;
+        $this->resolvers[$filterName] = $resolver;
 
         if ($resolver instanceof CacheManagerAwareInterface) {
             $resolver->setCacheManager($this);
@@ -80,16 +80,16 @@ class CacheManager
      *
      * @throws \OutOfBoundsException If neither a specific nor a default resolver is available.
      */
-    protected function getResolver($filter)
+    protected function getResolver($filterName)
     {
-        $config = $this->filterConfig->get($filter);
+        $config = $this->filterConfig->get($filterName);
 
         $resolverName = empty($config['cache'])
             ? $this->defaultResolver : $config['cache'];
 
         if (!isset($this->resolvers[$resolverName])) {
             throw new \OutOfBoundsException(sprintf(
-                'Could not find resolver for "%s" filter type', $filter
+                'Could not find resolver for "%s" filter type', $filterName
             ));
         }
 
@@ -154,9 +154,9 @@ class CacheManager
      *
      * @return bool
      */
-    public function isStored($path, $filter)
+    public function isStored($path, $filterName)
     {
-        return $this->getResolver($filter)->isStored($path, $filter);
+        return $this->getResolver($filterName)->isStored($path, $this->filterConfig->get($filterName));
     }
 
     /**
@@ -169,13 +169,13 @@ class CacheManager
      *
      * @throws NotFoundHttpException if the path can not be resolved
      */
-    public function resolve($path, $filter)
+    public function resolve($path, $filterName)
     {
         if (false !== strpos($path, '/../') || 0 === strpos($path, '../')) {
             throw new NotFoundHttpException(sprintf("Source image was searched with '%s' outside of the defined root path", $path));
         }
 
-        return $this->getResolver($filter)->resolve($path, $filter);
+        return $this->getResolver($filterName)->resolve($path, $this->filterConfig->get($filterName));
     }
 
     /**
@@ -185,9 +185,9 @@ class CacheManager
      * @param string          $path
      * @param string          $filter
      */
-    public function store(BinaryInterface $binary, $path, $filter)
+    public function store(BinaryInterface $binary, $path, $filterName)
     {
-        $this->getResolver($filter)->store($binary, $path, $filter);
+        $this->getResolver($filterName)->store($binary, $path, $this->filterConfig->get($filterName));
     }
 
     /**

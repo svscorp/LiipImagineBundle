@@ -107,10 +107,10 @@ class FilterManager
      *
      * @return BinaryInterface
      */
-    public function applyFilter(BinaryInterface $binary, $filter, array $runtimeConfig = array())
+    public function applyFilter(BinaryInterface $binary, $filterName, array $runtimeConfig = array())
     {
         $config = array_replace_recursive(
-            $this->getFilterConfiguration()->get($filter),
+            $this->getFilterConfiguration()->get($filterName),
             $runtimeConfig
         );
 

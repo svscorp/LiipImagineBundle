@@ -64,7 +64,7 @@ class ImagineController
      *
      * @return RedirectResponse
      */
-    public function filterAction(Request $request, $path, $filter)
+    public function filterAction(Request $request, $path, $filterName)
     {
         try {
             $runtimeConfig = array();
@@ -78,17 +78,18 @@ class ImagineController
                 $pathPrefix = substr($request->query->get('_hash'), 0, 8).'/';
             }
 
-            if (!$this->cacheManager->isStored($path, $filter)) {
-                $binary = $this->dataManager->find($filter, $path);
+            if (!$this->cacheManager->isStored($path, $filterName)) {
+
+                $binary = $this->dataManager->find($filterName, $path);
 
                 $this->cacheManager->store(
-                    $this->filterManager->applyFilter($binary, $filter, $runtimeConfig),
+                    $this->filterManager->applyFilter($binary, $filterName, $runtimeConfig),
                     $pathPrefix.$path,
-                    $filter
+                    $filterName
                 );
             }
 
-            return new RedirectResponse($this->cacheManager->resolve($pathPrefix.$path, $filter), 301);
+            return new RedirectResponse($this->cacheManager->resolve($pathPrefix.$path, $filterName), 301);
         } catch (RuntimeException $e) {
             throw new \RuntimeException(sprintf('Unable to create image for path "%s" and filter "%s". Message was "%s"', $pathPrefix.$path, $filter, $e->getMessage()), 0, $e);
         }
